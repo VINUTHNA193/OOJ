@@ -46,7 +46,7 @@ public class Main {
         Book[] books = new Book[n];
         for (int i = 0; i < n; i++) {
             System.out.println("\nEnter details for Book " + (i + 1) + ":");
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); 
             System.out.println("Enter name: ");
             String name = scanner.nextLine();
             System.out.println("Enter author: ");
