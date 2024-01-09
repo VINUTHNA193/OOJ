@@ -1,0 +1,166 @@
+import java.util.Scanner;
+
+class Account {
+    String customerName;
+    int accountNumber;
+    String accountType;
+    double balance;
+
+    Account(String name, int number, String type, double initialBalance) {
+        customerName = name;
+        accountNumber = number;
+        accountType = type;
+        balance = initialBalance;
+    }
+
+    void deposit(double amount) {
+        balance += amount;
+        System.out.println("Deposit of INR " + amount + " successful");
+    }
+
+    void displayBalance() {
+        System.out.println("Account Number: " + accountNumber);
+        System.out.println("Customer Name: " + customerName);
+        System.out.println("Account Type: " + accountType);
+        System.out.println("Balance: INR " + balance);
+    }
+
+    void withdraw(double amount) {
+        if (balance >= amount) {
+            balance -= amount;
+            System.out.println("Withdrawal of INR " + amount + " successful");
+        } else {
+            System.out.println("Insufficient funds");
+        }
+    }
+
+    void computeInterest() {
+    }
+
+    void checkMinimumBalance(double minBalance, double serviceCharge) {
+    }
+}
+
+class SavAcct extends Account {
+    double interestRate = 0.05;
+
+    SavAcct(String name, int number, String type, double initialBalance) {
+        super(name, number, type, initialBalance);
+    }
+
+    void computeInterest() {
+        double interest = balance * interestRate;
+        balance += interest;
+        System.out.println("Interest of INR " + interest + " added to the account");
+    }
+}
+
+class CurAcct extends Account {
+    double minBalance = 1000; 
+    double serviceCharge = 50;
+
+    CurAcct(String name, int number, String type, double initialBalance) {
+        super(name, number, type, initialBalance);
+    }
+
+    void checkMinimumBalance(double minBalance, double serviceCharge) {
+        if (balance < minBalance) {
+            System.out.println("Service charge of INR " + serviceCharge + " imposed");
+            balance -= serviceCharge;
+        }
+    }
+}
+
+public class Bank {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the number of users: ");
+        int numUsers = scanner.nextInt();
+        
+        Account[] accounts = new Account[numUsers];
+
+        for (int i = 0; i < numUsers; i++) {
+            System.out.println("\nUser " + (i + 1));
+            System.out.print("Enter customer name: ");
+            scanner.nextLine();
+            String name = scanner.nextLine();
+            System.out.print("Enter account number: ");
+            int accNumber = scanner.nextInt();
+            System.out.print("Enter initial deposit amount: INR ");
+            double initialDeposit = scanner.nextDouble();
+            System.out.print("Enter account type (Savings/Current): ");
+            scanner.nextLine();
+            String accType = scanner.nextLine();
+
+            if (accType.equalsIgnoreCase("Savings")) {
+                accounts[i] = new SavAcct(name, accNumber, accType, initialDeposit);
+            } else if (accType.equalsIgnoreCase("Current")) {
+                accounts[i] = new CurAcct(name, accNumber, accType, initialDeposit);
+            } else {
+                System.out.println("Invalid account type entered. Defaulting to Account.");
+                accounts[i] = new Account(name, accNumber, "Account", initialDeposit);
+            }
+        }
+
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("\nChoose an option:");
+            System.out.println("1. Deposit");
+            System.out.println("2. Withdraw");
+            System.out.println("3. Display Balance");
+            System.out.println("4. Compute Interest (Savings only)");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter account number: ");
+                    int accNum = scanner.nextInt();
+                    System.out.print("Enter deposit amount: INR ");
+                    double depositAmount = scanner.nextDouble();
+                    for (Account acc : accounts) {
+                        if (acc.accountNumber == accNum) {
+                            acc.deposit(depositAmount);
+                        }
+                    }
+                    break;
+                case 2:
+                    System.out.print("Enter account number: ");
+                    accNum = scanner.nextInt();
+                    System.out.print("Enter withdrawal amount: INR ");
+                    double withdrawAmount = scanner.nextDouble();
+                    for (Account acc : accounts) {
+                        if (acc.accountNumber == accNum) {
+                            acc.withdraw(withdrawAmount);
+                        }
+                    }
+                    break;
+                case 3:
+                    System.out.print("Enter account number: ");
+                    accNum = scanner.nextInt();
+                    for (Account acc : accounts) {
+                        if (acc.accountNumber == accNum) {
+                            acc.displayBalance();
+                        }
+                    }
+                    break;
+                case 4:
+                    System.out.print("Enter account number (for Savings account): ");
+                    accNum = scanner.nextInt();
+                    for (Account acc : accounts) {
+                        if (acc.accountNumber == accNum && acc instanceof SavAcct) {
+                            ((SavAcct) acc).computeInterest();
+                        }
+                    }
+                    break;
+                case 5:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please enter a valid option.");
+            }
+        }
+
+    }
+}
